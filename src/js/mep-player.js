@@ -116,7 +116,7 @@
 				t = this,
 				mf = mejs.MediaFeatures,
 				// options for MediaElement (shim)
-				meOptions = $.extend(true, {}, t.options, {
+				meOptions = $.extend({}, t.options, {
 					success: function(media, domNode) { t.meReady(media, domNode); },
 					error: function(e) { t.handleError(e);}
 				});
@@ -190,7 +190,8 @@
 				// find parts
 				t.controls = t.container.find('.mejs-controls');
 				t.layers = t.container.find('.mejs-layers');
-
+			
+				
 				// determine the size
 				if (t.isVideo) {
 					// priority = videoWidth (forced), width attribute, defaultVideoWidth
@@ -210,12 +211,11 @@
 			}
 
 			// create MediaElement shim
-			mejs.MediaElement(t.$media[0], meOptions);
+			mejs.MediaElement(t.node, meOptions);
 		},
 
 		// Sets up all controls and events
-		meReady: function(media, domNode) {			
-		
+		meReady: function(media, domNode) {		
 		
 			var t = this,
 				mf = mejs.MediaFeatures,
@@ -252,7 +252,7 @@
 							//throw e;
 						}
 					}
-				}
+				}		
 
 				// reset all layers and controls
 				t.setPlayerSize(t.width, t.height);
@@ -525,13 +525,15 @@
 	};
 
 	// turn into jQuery plugin
-	jQuery.fn.mediaelementplayer = function (options) {
-		return this.each(function () {
-			new mejs.MediaElementPlayer($(this), options);
-		});
-	};
-
+	if (window.jQuery) {
+		jQuery.fn.mediaelementplayer = function (options) {
+			return this.each(function () {
+				new mejs.MediaElementPlayer($(this), options);
+			});
+		};
+	}
+	
 	// push out to window
 	window.MediaElementPlayer = mejs.MediaElementPlayer;
 
-})(jQuery);
+})(mejs.$);
