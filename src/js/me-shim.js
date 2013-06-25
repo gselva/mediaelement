@@ -262,7 +262,7 @@ mejs.HtmlMediaElementShim = {
 		
 
 		// test for native playback first
-		if (supportsMediaTag && (options.mode === 'auto' || options.mode === 'auto_plugin' || options.mode === 'native')  && !(mejs.MediaFeatures.isBustedNativeHTTPS)) {
+		if (supportsMediaTag && (options.mode === 'auto' || options.mode === 'auto_plugin' || options.mode === 'native') ) {
 						
 			if (!isMediaTag) {
 
@@ -280,9 +280,19 @@ mejs.HtmlMediaElementShim = {
 				if (htmlMediaElement.canPlayType(mediaFiles[i].type).replace(/no/, '') !== '' 
 					// special case for Mac/Safari 5.0.3 which answers '' to canPlayType('audio/mp3') but 'maybe' to canPlayType('audio/mpeg')
 					|| htmlMediaElement.canPlayType(mediaFiles[i].type.replace(/mp3/,'mpeg')).replace(/no/, '') !== '') {
-					result.method = 'native';
-					result.url = mediaFiles[i].url;
-					break;
+
+                    //For HTTP Live Streaming native support, leave method as native. This will allow iOS/OS X devices to play HLS natively
+                    if (mediaFiles[i].type == "application/x-mpegURL") {
+                        result.method = 'native';
+                        result.url = mediaFiles[i].url;
+                        break;
+                    } else if(!mejs.MediaFeatures.isBustedNativeHTTPS) {
+                        result.method = 'native';
+                        result.url = mediaFiles[i].url;
+                        break;
+                    }
+
+
 				}
 			}			
 			
